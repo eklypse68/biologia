@@ -1,0 +1,9 @@
+{
+  "name": "mision-meiosis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Actividad interactiva de meiosis para 4.º ESO",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

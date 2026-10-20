@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Misión Meiosis · 4.º ESO · Almedina</title>
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --ink: #183050;
+        --muted: #60718a;
+        --red: #bb263b;
+        --blue: #1b5d9b;
+        --line: #dce4ee;
+        --green: #14765b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+      }
+      header {
+        background: linear-gradient(120deg, #153965, #1c6299);
+        color: white;
+        padding: 28px 20px;
+      }
+      header .wrap {
+        max-width: 1020px;
+        margin: auto;
+      }
+      h1 {
+        margin: 2px 0;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+      h2 {
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 7px 0 15px;
+      }
+      .sub {
+        color: #dceafa;
+      }
+      .wrap {
+        max-width: 1020px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .panel {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 22px;
+        margin: 15px 0;
+        box-shadow: 0 3px 16px #172b490b;
+      }
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav button {
+        background: #e8eff8;
+        color: #21436d;
+      }
+      .nav button.active {
+        background: var(--blue);
+        color: #fff;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        border: 0;
+        border-radius: 10px;
+        background: var(--blue);
+        color: white;
+        padding: 10px 15px;
+        font-weight: 650;
+      }
+      button:hover {
+        filter: brightness(0.95);
+      }
+      button:focus-visible,
+      .piece:focus-visible {
+        outline: 3px solid #f0ab30;
+        outline-offset: 2px;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      button.secondary {
+        background: #e7eef7;
+        color: #21436d;
+      }
+      button.warn {
+        background: var(--red);
+      }
+      button.good {
+        background: var(--green);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .pill {
+        border-radius: 50px;
+        padding: 5px 12px;
+        background: #e6effa;
+        font-size: 13px;
+        font-weight: 750;
+        color: #235987;
+      }
+      .progress {
+        height: 13px;
+        border-radius: 20px;
+        background: #e7eaf2;
+        overflow: hidden;
+      }
+      .progress > div {
+        height: 100%;
+        background: #168466;
+        transition: width 0.25s;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .choice {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: #eef3f8;
+        color: var(--ink);
+        border: 2px solid transparent;
+      }
+      .choice.selected {
+        border-color: #2e71a5;
+        background: #e5f1fa;
+      }
+      .feedback {
+        padding: 13px;
+        border-radius: 10px;
+        background: #f4f7fc;
+        border-left: 4px solid #8ca2bc;
+        margin-top: 12px;
+      }
+      .feedback.ok {
+        background: #e7f7ef;
+        border-color: #208760;
+      }
+      .feedback.bad {
+        background: #fff0ed;
+        border-color: #bd4c3c;
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      @media (max-width: 690px) {
+        .columns {
+          grid-template-columns: 1fr;
+        }
+      }
+      .board {
+        background: #f9fbfe;
+        border: 2px dashed #a9bdd1;
+        border-radius: 15px;
+        padding: 15px;
+        min-height: 175px;
+      }
+      .pool {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        min-height: 65px;
+        align-items: center;
+      }
+      .piece {
+        user-select: none;
+        touch-action: manipulation;
+        width: 69px;
+        height: 76px;
+        border: 2px solid #a8bed3;
+        background: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        cursor: pointer;
+        font-weight: 700;
+        color: #2f5374;
+        font-size: 12px;
+      }
+      .piece.selected {
+        outline: 4px solid #f0af38;
+      }
+      .chrom {
+        width: 28px;
+        height: 47px;
+        position: relative;
+      }
+      .chrom:before,
+      .chrom:after {
+        content: "";
+        position: absolute;
+        width: 11px;
+        height: 47px;
+        left: 8px;
+        top: 0;
+        background: var(--c);
+        border-radius: 10px;
+        transform: rotate(31deg);
+      }
+      .chrom:after {
+        transform: rotate(-31deg);
+      }
+      .chrom.single:after {
+        display: none;
+      }
+      .chrom.single:before {
+        transform: none;
+      }
+      .chrom.recombined:after {
+        background: linear-gradient(
+          to bottom,
+          var(--c) 0 52%,
+          var(--other) 52%
+        );
+      }
+      .label {
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .dropzone {
+        border: 2px dashed #b3c2d2;
+        border-radius: 12px;
+        min-height: 102px;
+        padding: 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-content: flex-start;
+      }
+      .dropzone.target {
+        border-color: #d59c27;
+        background: #fffbef;
+      }
+      .diagram {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .diagram > div {
+        background: #edf3fa;
+        text-align: center;
+        border-radius: 9px;
+        padding: 14px 4px;
+        font-weight: 750;
+      }
+      @media (max-width: 650px) {
+        .diagram {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 11px;
+        border-radius: 10px;
+        border: 1px solid #aabed2;
+        font: inherit;
+      }
+      textarea {
+        min-height: 105px;
+      }
+      small {
+        color: var(--muted);
+      }
+      .data {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .score {
+        font-size: 23px;
+        font-weight: 850;
+        color: var(--blue);
+      }
+      .step {
+        color: var(--red);
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        font-size: 12px;
+      }
+      .separator {
+        border: 0;
+        border-top: 1px solid var(--line);
+        margin: 18px 0;
+      }
+      footer {
+        text-align: center;
+        color: #60718a;
+        padding: 25px;
+      }
+      .teacher {
+        background: #fff8e8;
+        border: 1px solid #efd69b;
+        border-radius: 12px;
+        padding: 13px;
+      }
+      .copy {
+        white-space: pre-wrap;
+      }
+      .minihelp {
+        background: #e9f4ff;
+        border-left: 4px solid var(--blue);
+        padding: 12px;
+        border-radius: 9px;
+        margin: 12px 0;
+      }
+      .meiosis-source {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .celltarget {
+        min-height: 115px;
+      }
+      .mini.chrom {
+        height: 38px;
+      }
+      .chrom.single:before {
+        left: 9px;
+      }
+      .cellgroup {
+        margin: 12px 0;
+        padding: 13px;
+        border: 1px solid #d5e2ee;
+        border-radius: 14px;
+        background: #fff;
+      }
+      .chromatids {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tag {
+        font-size: 12px;
+        color: #426789;
+      }
+      .copy {
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="step" style="color: #ffccd5">
+          COLEGIO ALMEDINA · BIOLOGÍA Y GEOLOGÍA · 4.º ESO
+        </div>
+        <h1>🧬 MISIÓN MEIOSIS</h1>
+        <p class="sub">
+          Operación 23 · Laboratorio interactivo de división celular
+        </p>
+        <div class="data">
+          <span class="pill" id="topscore">0 / 100 XP</span
+          ><span class="pill" id="nameBadge">Equipo sin nombre</span>
+        </div>
+      </div>
+    </header>
+    <main class="wrap">
+      <div class="panel">
+        <div class="row" style="justify-content: space-between">
+          <strong>Tu progreso</strong
+          ><span id="progressLabel">0 de 5 misiones completadas</span>
+        </div>
+        <div class="progress"><div id="bar" style="width: 0%"></div></div>
+        <p>
+          <small
+            >Instrucciones: completa las actividades en orden. Se puede usar
+            ratón, teclado o pantalla táctil. Los cromosomas se seleccionan
+            tocándolos y después tocando la zona de destino.</small
+          >
+        </p>
+        <nav class="nav" id="nav"></nav>
+      </div>
+      <section class="panel" id="intro">
+        <h2>🔐 Activa tu equipo</h2>
+        <p>
+          Vuestra célula está a punto de iniciar la meiosis. Debéis resolver
+          cinco desafíos para producir gametos con la dotación cromosómica
+          correcta. Cada misión requiere justificar decisiones, no solo acertar.
+        </p>
+        <label for="team"><strong>Nombre del equipo</strong></label
+        ><input
+          id="team"
+          type="text"
+          maxlength="36"
+          placeholder="Ej.: Los cromosomas intrépidos"
+        />
+        <p><button onclick="start()">Entrar al laboratorio →</button></p>
+      </section>
+      <section class="panel hidden" id="s1">
+        <div class="step">MISIÓN 1 · 15 XP</div>
+        <h2>🔐 Descifra el código cromosómico</h2>
+        <p>
+          Una célula humana normal tiene <strong>46 cromosomas</strong>. Si dos
+          gametos aportaran 46 cada uno, ¿cuántos cromosomas tendría el cigoto?
+        </p>
+        <div id="choices1" class="choices"></div>
+        <button id="check1" onclick="check1()">Comprobar código</button>
+        <div id="f1" aria-live="polite"></div>
+        <p>
+          <small
+            >Reto escrito: ¿por qué los gametos humanos deben tener 23
+            cromosomas?</small
+          >
+        </p>
+        <textarea
+          id="t1"
+          placeholder="Explica la relación entre meiosis, gametos y fecundación..."
+        ></textarea
+        ><button class="secondary" onclick="go(2)">Continuar →</button>
+      </section>
+      <section class="panel hidden" id="s2">
+        <div class="step">MISIÓN 2 · 20 XP</div>
+        <h2>🔁 Laboratorio de recombinación</h2>
+        <p>
+          Durante la <strong>profase I</strong> puede producirse el
+          entrecruzamiento entre cromátidas <strong>no hermanas</strong> de
+          cromosomas homólogos. Selecciona una cromátida roja y una azul; luego
+          pulsa «Intercambiar fragmentos».
+        </p>
+        <div class="columns">
+          <div class="board">
+            <div class="label">Cromosomas homólogos duplicados</div>
+            <div class="pool" id="recombPool"></div>
+          </div>
+          <div class="board">
+            <div class="label">Tu observación</div>
+            <p id="recombText">Selecciona dos cromátidas de distinto origen.</p>
+            <p>
+              <strong>Seleccionadas:</strong>
+              <span id="selectedRecomb">0 de 2</span>
+            </p>
+            <button onclick="recombine()">Intercambiar fragmentos</button
+            ><button class="secondary" onclick="resetRecomb()">
+              Reiniciar
+            </button>
+          </div>
+        </div>
+        <div id="f2" aria-live="polite"></div>
+        <p>
+          <strong>Explica:</strong> ¿por qué las cromátidas recombinadas no
+          conservan exactamente la combinación inicial de alelos?
+        </p>
+        <textarea id="t2" placeholder="Después del intercambio... "></textarea
+        ><button class="secondary" onclick="go(3)">Continuar →</button>
+      </section>
+      <section class="panel hidden" id="s3">
+        <div class="step">MISIÓN 3 · 30 XP</div>
+        <h2>🧩 Separa los cromosomas sin errores</h2>
+        <p>
+          Modelo simplificado: célula inicial <strong>2n = 4</strong>. Hay dos
+          pares de homólogos (A y B). En la <strong>meiosis I</strong> debes
+          repartir los homólogos duplicados: cada célula hija recibe uno de cada
+          par. Selecciona una pieza y después el destino.
+        </p>
+        <div class="board">
+          <div class="label" id="poolTitle">Cromosomas disponibles</div>
+          <div class="pool" id="pool3"></div>
+        </div>
+        <div class="columns" style="margin-top: 12px">
+          <div class="board">
+            <div class="label" id="zoneTitle0">Célula hija 1</div>
+            <div class="dropzone" id="zone0" onclick="dropPiece(0)"></div>
+          </div>
+          <div class="board">
+            <div class="label" id="zoneTitle1">Célula hija 2</div>
+            <div class="dropzone" id="zone1" onclick="dropPiece(1)"></div>
+          </div>
+        </div>
+        <p class="row">
+          <button onclick="check3()" id="check3">Comprobar meiosis I</button
+          ><button class="secondary" onclick="reset3()">
+            Reiniciar reparto
+          </button>
+        </p>
+        <div id="f3" aria-live="polite"></div>
+        <div id="phaseTwo" class="hidden">
+          <hr class="separator" />
+          <h3>🧬 Meiosis II · ¡Ahora tú separas las cromátidas!</h3>
+          <div class="minihelp">
+            <strong>Instrucciones en 3 pasos:</strong><br />1. Trabaja con la
+            célula 1: sus dos cromosomas duplicados (A y B) se separan en
+            <strong>cuatro cromátidas</strong> (A₁, A₂, B₁, B₂).<br />2.
+            <strong>Pulsa una cromátida</strong> de la bandeja y después la
+            <strong>célula final</strong> donde quieres enviarla. Cada nueva
+            célula debe recibir <strong>una A y una B</strong>.<br />3. Repite
+            lo mismo con la célula 2. Al terminar tendrás
+            <strong>cuatro células haploides</strong>, cada una con dos
+            cromosomas no duplicados.<br /><small
+              >Importante: las cromátidas hermanas se separan en anafase II. Los
+              cromosomas homólogos ya se separaron en meiosis I.</small
+            >
+          </div>
+          <div id="m2work"></div>
+          <p class="row">
+            <button onclick="checkII()" id="checkII">
+              Comprobar meiosis II</button
+            ><button class="secondary" onclick="resetII()">
+              Reiniciar solo meiosis II
+            </button>
+          </p>
+          <div id="fII" aria-live="polite"></div>
+          <div id="gametes" class="diagram hidden"></div>
+        </div>
+        <button class="secondary" onclick="go(4)">Continuar →</button>
+      </section>
+      <section class="panel hidden" id="s4">
+        <div class="step">MISIÓN 4 · 20 XP</div>
+        <h2>🕵️ Detectives celulares</h2>
+        <p>
+          Resuelve las diez preguntas. Cada acierto vale 2 XP. La explicación
+          aparece al comprobar.
+        </p>
+        <div id="quiz"></div>
+        <p>
+          <button onclick="checkQuiz()">Comprobar mis respuestas</button>
+          <button class="secondary" onclick="resetQuiz()">Repetir</button>
+        </p>
+        <div id="f4" aria-live="polite"></div>
+        <button class="secondary" onclick="go(5)">Continuar →</button>
+      </section>
+      <section class="panel hidden" id="s5">
+        <div class="step">MISIÓN 5 · 15 XP</div>
+        <h2>🚨 El error de segregación</h2>
+        <p>
+          En una célula con 2n = 4, durante la <strong>anafase I</strong> los
+          dos homólogos del par A se desplazan al mismo polo. El par B se separa
+          normalmente. ¿Qué ocurrirá si la meiosis II transcurre después sin
+          errores?
+        </p>
+        <div id="choices5" class="choices"></div>
+        <button onclick="check5()">Verificar hipótesis</button>
+        <div id="f5" aria-live="polite"></div>
+        <p>
+          <strong>Informe científico:</strong> explica qué falló, cómo afecta al
+          número de cromosomas de los gametos y por qué importa.
+        </p>
+        <textarea
+          id="t5"
+          placeholder="Ha fallado la separación de... Esto provoca... Es importante porque..."
+        ></textarea>
+        <p>
+          <button class="good" onclick="finish()">
+            Cerrar misión y ver mi informe
+          </button>
+        </p>
+      </section>
+      <section class="panel hidden" id="result">
+        <h2>🏆 Informe del laboratorio</h2>
+        <div class="score" id="finalScore"></div>
+        <p id="finalText"></p>
+        <div id="finalReport" class="copy feedback"></div>
+        <p>
+          <button onclick="print()">🖨️ Imprimir / Guardar PDF</button>
+          <button class="secondary" onclick="copyReport()">
+            Copiar informe
+          </button>
+          <button class="warn" onclick="restart()">Reiniciar todo</button>
+        </p>
+        <p class="teacher">
+          <strong>Ticket de salida VESS:</strong> «Antes pensaba… / Ahora
+          pienso… / Mi pensamiento cambió porque…»
+        </p>
+        <textarea
+          id="vess"
+          oninput="$('finalReport').textContent=report()"
+          placeholder="Reflexión individual..."
+        ></textarea>
+      </section>
+    </main>
+    <footer>
+      Actividad didáctica · Colegio Almedina · 4.º ESO · 2026/2027 · Funciona
+      sin conexión
+    </footer>
+    <script>
+      const names = [
+        "Código genético",
+        "Recombinación",
+        "Separación",
+        "Detectives",
+        "Caso final",
+      ];
+      const points = [15, 20, 30, 20, 15];
+      const score = [0, 0, 0, 0, 0];
+      let current = 0,
+        team = "Equipo sin nombre",
+        selection = {},
+        chosenRecomb = [],
+        chroms = [],
+        zones = [[], []],
+        picked = null,
+        phase = 1,
+        iiZones = [[], [], [], []],
+        iiPicked = null;
+      const $ = (id) => document.getElementById(id);
+      function update() {
+        let sum = score.reduce((a, b) => a + b, 0);
+        $("topscore").textContent = sum + " / 100 XP";
+        $("bar").style.width = sum + "%";
+        $("progressLabel").textContent =
+          score.filter((x) => x > 0).length + " de 5 misiones puntuadas";
+        $("nav").innerHTML = names
+          .map(
+            (n, i) =>
+              `<button class="${current === i + 1 ? "active" : ""}" onclick="go(${i + 1})">${score[i] ? "✓ " : ""}${i + 1}. ${n}</button>`,
+          )
+          .join("");
+      }
+      function show(id) {
+        ["intro", "s1", "s2", "s3", "s4", "s5", "result"].forEach((x) =>
+          $(x).classList.toggle("hidden", x !== id),
+        );
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function start() {
+        team = $("team").value.trim() || "Equipo sin nombre";
+        $("nameBadge").textContent = team;
+        go(1);
+      }
+      function go(i) {
+        current = i;
+        show("s" + i);
+        update();
+      }
+      function feedback(id, ok, msg) {
+        $(id).innerHTML =
+          `<div class="feedback ${ok ? "ok" : "bad"}">${msg}</div>`;
+      }
+      function choose(which, i) {
+        selection[which] = i;
+        document
+          .querySelectorAll("#choices" + which + " button")
+          .forEach((b, j) => b.classList.toggle("selected", i === j));
+      }
+      function makeChoices(which, arr) {
+        $("choices" + which).innerHTML = arr
+          .map(
+            (x, i) =>
+              `<button class="choice" onclick="choose(${which},${i})">${String.fromCharCode(65 + i)}. ${x}</button>`,
+          )
+          .join("");
+      }
+      makeChoices(1, ["46 cromosomas", "92 cromosomas", "23 cromosomas"]);
+      function check1() {
+        let ok = selection[1] === 1;
+        score[0] = ok ? 15 : 0;
+        feedback(
+          "f1",
+          ok,
+          ok
+            ? "Correcto: 46 + 46 = 92. La meiosis hace posible que los gametos humanos aporten 23 cada uno."
+            : "Revisa qué aporta cada gameto y suma sus cromosomas.",
+        );
+        update();
+      }
+      let recombined = false;
+      function renderRecomb() {
+        let el = $("recombPool");
+        el.innerHTML = "";
+        for (let i = 0; i < 4; i++) {
+          let color = i < 2 ? "#cf3651" : "#327abe",
+            other = i < 2 ? "#327abe" : "#cf3651";
+          let b = document.createElement("button");
+          b.className = "piece" + (chosenRecomb.includes(i) ? " selected" : "");
+          b.innerHTML = `<div class="chrom ${recombined && (i === chosenRecomb[0] || i === chosenRecomb[1]) ? "recombined" : ""}" style="--c:${color};--other:${other}"></div><span>${i < 2 ? "R" : "A"}${(i % 2) + 1}</span>`;
+          b.onclick = () => {
+            if (recombined) return;
+            if (chosenRecomb.includes(i))
+              chosenRecomb = chosenRecomb.filter((x) => x !== i);
+            else if (chosenRecomb.length < 2) chosenRecomb.push(i);
+            $("selectedRecomb").textContent = chosenRecomb.length + " de 2";
+            renderRecomb();
+          };
+          el.append(b);
+        }
+      }
+      function recombine() {
+        if (chosenRecomb.length !== 2) {
+          feedback("f2", false, "Selecciona exactamente dos cromátidas.");
+          return;
+        }
+        if (chosenRecomb[0] < 2 === chosenRecomb[1] < 2) {
+          feedback(
+            "f2",
+            false,
+            "Estas cromátidas son hermanas. Selecciona una roja y una azul: deben ser no hermanas de cromosomas homólogos.",
+          );
+          return;
+        }
+        recombined = true;
+        score[1] = 20;
+        renderRecomb();
+        $("recombText").textContent =
+          "¡Se han intercambiado segmentos equivalentes entre cromátidas no hermanas!";
+        feedback(
+          "f2",
+          true,
+          "Recombinación correcta. La nueva distribución de fragmentos puede generar combinaciones nuevas de alelos.",
+        );
+        update();
+      }
+      function resetRecomb() {
+        recombined = false;
+        chosenRecomb = [];
+        score[1] = 0;
+        $("selectedRecomb").textContent = "0 de 2";
+        $("recombText").textContent =
+          "Selecciona dos cromátidas de distinto origen.";
+        $("f2").innerHTML = "";
+        renderRecomb();
+        update();
+      }
+      renderRecomb();
+      function reset3() {
+        chroms = [
+          { id: "A1", pair: "A", col: "#c9364e" },
+          { id: "A2", pair: "A", col: "#3681be" },
+          { id: "B1", pair: "B", col: "#c9364e" },
+          { id: "B2", pair: "B", col: "#3681be" },
+        ];
+        zones = [[], []];
+        picked = null;
+        phase = 1;
+        iiZones = [[], [], [], []];
+        iiPicked = null;
+        score[2] = 0;
+        $("phaseTwo").classList.add("hidden");
+        $("f3").innerHTML = "";
+        $("check3").disabled = false;
+        render3();
+        update();
+      }
+      function cHtml(c) {
+        return `<div class="chrom" style="--c:${c.col}"></div><span>${c.id}</span>`;
+      }
+      function render3() {
+        $("pool3").innerHTML =
+          chroms
+            .filter((x) => !zones.flat().includes(x.id))
+            .map(
+              (c) =>
+                `<button class="piece ${picked === c.id ? "selected" : ""}" onclick="pick('${c.id}')">${cHtml(c)}</button>`,
+            )
+            .join("") || "<small>Todos distribuidos</small>";
+        for (let i = 0; i < 2; i++)
+          $("zone" + i).innerHTML =
+            zones[i]
+              .map((id) => {
+                let c = chroms.find((c) => c.id === id);
+                return `<button class="piece" onclick="removePiece('${id}',event)">${cHtml(c)}</button>`;
+              })
+              .join("") ||
+            "<small>Toca aquí después de seleccionar una pieza</small>";
+      }
+      function pick(id) {
+        picked = picked === id ? null : id;
+        render3();
+      }
+      function dropPiece(i) {
+        if (!picked || phase !== 1) return;
+        zones[i].push(picked);
+        picked = null;
+        render3();
+      }
+      function removePiece(id, event) {
+        event.stopPropagation();
+        if (phase !== 1) return;
+        zones = zones.map((z) => z.filter((x) => x !== id));
+        picked = null;
+        render3();
+      }
+      function check3() {
+        let good =
+          zones.every(
+            (z) =>
+              z.length === 2 &&
+              z.some((id) => id.startsWith("A")) &&
+              z.some((id) => id.startsWith("B")),
+          ) && zones.every((z) => z.length === new Set(z).size);
+        if (!good) {
+          feedback(
+            "f3",
+            false,
+            "Comprueba que las dos células reciban exactamente un cromosoma duplicado A y uno B. Puedes devolver piezas tocándolas.",
+          );
+          return;
+        }
+        phase = 2;
+        score[2] = 15;
+        $("phaseTwo").classList.remove("hidden");
+        $("check3").disabled = true;
+        resetII();
+        feedback(
+          "f3",
+          true,
+          "¡Meiosis I correcta! Se separaron los cromosomas homólogos. A continuación, separa tú mismo las cromátidas hermanas de cada célula.",
+        );
+        update();
+      }
+      function iiParts() {
+        return zones.flatMap((cell, origin) =>
+          cell.flatMap((id) =>
+            [0, 1].map((k) => ({
+              id: id + "-" + k,
+              origin,
+              pair: id[0],
+              short: id[0] + (k + 1),
+              col: chroms.find((c) => c.id === id).col,
+            })),
+          ),
+        );
+      }
+      function pickII(id) {
+        if (phase !== 2) return;
+        iiPicked = iiPicked === id ? null : id;
+        renderII();
+      }
+      function dropII(target) {
+        if (phase !== 2 || !iiPicked) return;
+        let part = iiParts().find((p) => p.id === iiPicked);
+        if (!part || Math.floor(target / 2) !== part.origin)
+          return feedback(
+            "fII",
+            false,
+            "No puedes mezclar las cromátidas de las dos células obtenidas tras meiosis I.",
+          );
+        iiZones[target].push(iiPicked);
+        iiPicked = null;
+        $("fII").innerHTML = "";
+        renderII();
+      }
+      function undoII(id) {
+        if (phase !== 2) return;
+        iiZones = iiZones.map((z) => z.filter((x) => x !== id));
+        iiPicked = null;
+        renderII();
+      }
+      function renderII() {
+        let all = iiParts();
+        $("m2work").innerHTML = [0, 1]
+          .map((origin) => {
+            let avail = all.filter(
+              (p) => p.origin === origin && !iiZones.flat().includes(p.id),
+            );
+            let source = zones[origin]
+              .map(
+                (id) =>
+                  `<span class="pill">${id}: cromosoma duplicado → 2 cromátidas</span>`,
+              )
+              .join(" ");
+            let pieces =
+              avail
+                .map(
+                  (p) =>
+                    `<button class="piece ${iiPicked === p.id ? "selected" : ""}" onclick="pickII('${p.id}')" aria-label="Seleccionar cromátida ${p.short} de cromosoma ${p.id.split("-")[0]}"><div class="chrom single" style="--c:${p.col}"></div><span>${p.id.split("-")[0]} · ${Number(p.id.split("-")[1]) + 1}</span></button>`,
+                )
+                .join("") ||
+              "<small>Has repartido las cuatro cromátidas. Revisa las células hijas.</small>";
+            return `<div class="cellgroup"><strong>Origen: célula ${origin + 1} después de meiosis I</strong><p class="tag">${source}</p><div class="label">Cromátidas disponibles · selecciona una</div><div class="chromatids">${pieces}</div><div class="columns" style="margin-top:12px">${[
+              0, 1,
+            ]
+              .map((child) => {
+                let target = origin * 2 + child,
+                  arr = iiZones[target];
+                return `<div class="board celltarget"><div class="label">Célula final ${target + 1} · n = 2</div><div class="dropzone" role="button" tabindex="0" onclick="dropII(${target})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dropII(${target})}">${
+                  arr
+                    .map((id) => {
+                      let p = all.find((x) => x.id === id);
+                      return `<button class="piece" onclick="event.stopPropagation();undoII('${id}')" title="Devolver cromátida a bandeja"><div class="chrom single" style="--c:${p.col}"></div><span>${p.id.split("-")[0]} · ${Number(p.id.split("-")[1]) + 1} ↩</span></button>`;
+                    })
+                    .join("") ||
+                  "<small>Toca aquí para colocar una cromátida</small>"
+                }</div><small>${arr.length}/2 cromátidas</small></div>`;
+              })
+              .join("")}</div></div>`;
+          })
+          .join("");
+      }
+      function resetII() {
+        iiZones = [[], [], [], []];
+        iiPicked = null;
+        if (phase === 3) phase = 2;
+        if (phase === 2) score[2] = 15;
+        $("gametes").classList.add("hidden");
+        $("gametes").innerHTML = "";
+        $("fII").innerHTML = "";
+        renderII();
+        update();
+      }
+      function checkII() {
+        if (phase !== 2) return;
+        let all = iiParts();
+        let valid = iiZones.every(
+          (z, i) =>
+            z.length === 2 &&
+            new Set(z).size === 2 &&
+            z.every(
+              (id) =>
+                all.find((p) => p.id === id)?.origin === Math.floor(i / 2),
+            ) &&
+            z.some((id) => all.find((p) => p.id === id)?.pair === "A") &&
+            z.some((id) => all.find((p) => p.id === id)?.pair === "B"),
+        );
+        if (!valid || new Set(iiZones.flat()).size !== 8) {
+          feedback(
+            "fII",
+            false,
+            "Aún hay un error. Cada célula final debe contener exactamente UNA cromátida A y UNA cromátida B procedentes de su célula de origen. Devuelve las piezas equivocadas tocándolas y vuelve a intentarlo.",
+          );
+          return;
+        }
+        phase = 3;
+        score[2] = 30;
+        $("gametes").classList.remove("hidden");
+        $("gametes").innerHTML = iiZones
+          .map(
+            (z, i) =>
+              `<div>✓ CÉLULA ${i + 1}<br>n = 2<br><small>${z.map((id) => id.split("-")[0] + " (cromátida " + (Number(id.split("-")[1]) + 1) + ")").join(" + ")}</small></div>`,
+          )
+          .join("");
+        feedback(
+          "fII",
+          true,
+          "¡Correcto! Has separado las cromátidas hermanas de cada una de las dos células. Se obtienen cuatro células haploides, cada una con un A y un B, ahora no duplicados.",
+        );
+        update();
+      }
+      reset3();
+      const quiz = [
+        [
+          "¿En qué fase se separan los cromosomas homólogos?",
+          ["Profase I", "Anafase I", "Anafase II", "Telofase II"],
+          1,
+          "Los homólogos se separan en la anafase I.",
+        ],
+        [
+          "¿Qué estructuras se separan en la anafase II?",
+          [
+            "Los cromosomas homólogos",
+            "Las cromátidas hermanas",
+            "Las células somáticas",
+            "Las parejas de genes",
+          ],
+          1,
+          "En anafase II se separan las cromátidas hermanas.",
+        ],
+        [
+          "¿En qué momento ocurre normalmente el entrecruzamiento?",
+          ["Metafase II", "Anafase I", "Profase I", "Telofase I"],
+          2,
+          "El entrecruzamiento ocurre en profase I entre cromátidas no hermanas.",
+        ],
+        [
+          "En una célula humana diploide, ¿cuántos cromosomas hay normalmente?",
+          ["23", "92", "46", "12"],
+          2,
+          "Las células somáticas humanas suelen tener 46 cromosomas.",
+        ],
+        [
+          "¿Cuántos cromosomas tiene normalmente un gameto humano?",
+          ["46", "23", "92", "2"],
+          1,
+          "El gameto humano normal es haploide: n = 23.",
+        ],
+        [
+          "¿Cuántas divisiones celulares incluye la meiosis?",
+          ["Una", "Tres", "Cuatro", "Dos"],
+          3,
+          "La meiosis comprende la primera y la segunda división meiótica.",
+        ],
+        [
+          "¿Qué sucede con el ADN antes de que comience la meiosis I?",
+          [
+            "Se duplica durante la fase S",
+            "Se reduce a la mitad",
+            "Se destruye",
+            "No cambia en absoluto",
+          ],
+          0,
+          "El ADN se replica una sola vez, antes de meiosis I.",
+        ],
+        [
+          "¿Qué sucede entre meiosis I y meiosis II?",
+          [
+            "Se duplica otra vez el ADN",
+            "Se fusionan los núcleos",
+            "No se produce una nueva replicación del ADN",
+            "Se forman nuevos pares de homólogos",
+          ],
+          2,
+          "No hay una nueva fase S de duplicación entre ambas divisiones.",
+        ],
+        [
+          "¿Qué favorece la variabilidad genética en la meiosis?",
+          [
+            "Solo la citocinesis",
+            "La recombinación y el reparto independiente de homólogos",
+            "Solo la duplicación del ADN",
+            "La desaparición del huso",
+          ],
+          1,
+          "Recombinación y distribución independiente producen distintas combinaciones.",
+        ],
+        [
+          "En un modelo de meiosis de una célula 2n = 4, ¿qué resultado final se espera?",
+          [
+            "Dos células con 4 cromosomas",
+            "Cuatro células con 4 cromosomas",
+            "Cuatro células con 2 cromosomas",
+            "Una célula con 8 cromosomas",
+          ],
+          2,
+          "El modelo produce cuatro células haploides con n = 2.",
+        ],
+      ];
+      function renderQuiz() {
+        $("quiz").innerHTML = quiz
+          .map(
+            (q, i) =>
+              `<div class="board" style="margin:12px 0"><strong>${i + 1}. ${q[0]}</strong><div class="choices">${q[1].map((a, j) => `<label><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65 + j)}. ${a}</label>`).join("")}</div><small id="ex${i}"></small></div>`,
+          )
+          .join("");
+      }
+      function checkQuiz() {
+        let count = 0;
+        quiz.forEach((q, i) => {
+          let val = document.querySelector(`input[name=q${i}]:checked`);
+          let ok = val && Number(val.value) === q[2];
+          count += ok ? 1 : 0;
+          $("ex" + i).textContent =
+            (ok
+              ? "✓ Correcto. "
+              : val
+                ? "✗ Incorrecto. "
+                : "◯ Sin responder. ") + q[3];
+        });
+        score[3] = count * 2;
+        feedback(
+          "f4",
+          count === 10,
+          `Resultado: ${count}/10 aciertos · ${score[3]}/20 XP`,
+        );
+        update();
+      }
+      function resetQuiz() {
+        renderQuiz();
+        score[3] = 0;
+        $("f4").innerHTML = "";
+        update();
+      }
+      renderQuiz();
+      makeChoices(5, [
+        "Cuatro gametos con 2 cromosomas cada uno",
+        "Dos gametos con 3 cromosomas y dos con 1 cromosoma",
+        "Cuatro gametos con 4 cromosomas",
+      ]);
+      function check5() {
+        let ok = selection[5] === 1;
+        score[4] = ok ? 15 : 0;
+        feedback(
+          "f5",
+          ok,
+          ok
+            ? "Correcto. Por no disyunción en meiosis I, los cuatro gametos resultantes de esta célula tienen un número anómalo: dos n + 1 y dos n − 1."
+            : "Representa primero las dos células tras la meiosis I: una recibe ambos homólogos A, la otra ninguno. A continuación divide las cromátidas en meiosis II.",
+        );
+        update();
+      }
+      function report() {
+        return `MISIÓN MEIOSIS · 4.º ESO · COLEGIO ALMEDINA\nEquipo: ${team}\nPuntuación: ${score.reduce((a, b) => a + b, 0)} / 100 XP\nMisiones: ${names.map((n, i) => n + " " + score[i] + "/" + points[i]).join(" | ")}\n\n1. ¿Por qué hay que reducir la dotación cromosómica?\n${$("t1").value || "(sin responder)"}\n\n2. ¿Por qué la recombinación puede generar nuevas combinaciones?\n${$("t2").value || "(sin responder)"}\n\n3. Resultado del modelo de división: ${phase === 3 ? "meiosis I y II completadas" : "sin completar"}\n\n5. Informe del error de segregación:\n${$("t5").value || "(sin responder)"}\n\nReflexión VESS:\n${$("vess").value || "(sin responder)"}`;
+      }
+      function finish() {
+        current = 6;
+        show("result");
+        $("finalScore").textContent =
+          score.reduce((a, b) => a + b, 0) + " / 100 XP";
+        $("finalText").textContent =
+          "El informe recoge tus respuestas para que el docente compruebe cómo justificas tus modelos. Los XP son orientativos.";
+        $("finalReport").textContent = report();
+        update();
+      }
+      function copyReport() {
+        navigator.clipboard
+          ?.writeText(report())
+          .then(() => alert("Informe copiado"))
+          .catch(() => {
+            prompt("Copia tu informe:", report());
+          });
+      }
+      function restart() {
+        if (!confirm("¿Reiniciar todas las misiones y borrar las respuestas?"))
+          return;
+        location.reload();
+      }
+    </script>
+  </body>
+</html>
